@@ -6,136 +6,142 @@
     <title>Politieacademie | Simulatie De Dapper Q2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --p-blue: #003366; --p-gold: #ffcc00; }
-        body { background-color: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
-        .p-card { background: white; border-top: 6px solid var(--p-blue); border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .btn-police { background-color: var(--p-blue); color: white; font-weight: 800; text-transform: uppercase; }
-        .speaking-border { animation: pulse 1.5s infinite; border: 4px solid #ef4444 !important; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-        .feedback-item { background: #fffdf0; border-left: 4px solid var(--p-gold); padding: 10px; margin-top: 8px; font-size: 0.8rem; }
-        /* Extra styles voor zoom */
+        :root { 
+            --p-blue: #2c4c7c; /* Zachtere blauw-tint */
+            --p-gold: #e6b800; /* Minder fel goud */
+            --bg-light: #f4f7f9; 
+        }
+        body { background-color: var(--bg-light); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #334155; }
+        .p-card { background: white; border-top: 4px solid var(--p-blue); border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .btn-police { background-color: var(--p-blue); color: white; font-weight: 700; text-transform: uppercase; letter-spacing: 0.025em; }
+        .btn-police:hover { background-color: #1e3a5f; }
+        .speaking-border { animation: pulse 2s infinite; border: 3px solid #f87171 !important; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        .feedback-item { background: #fffef2; border-left: 3px solid var(--p-gold); padding: 12px; margin-top: 10px; font-size: 0.85rem; border-radius: 0 4px 4px 0; }
+        .cctv-label { background: rgba(255, 255, 255, 0.8); color: #1e293b; font-weight: bold; }
         .cursor-zoom-in { cursor: zoom-in; }
         .cursor-zoom-out { cursor: zoom-out; }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
-    <div id="image-overlay" class="fixed inset-0 bg-black/95 z-[100] hidden flex items-center justify-center p-4 cursor-zoom-out" onclick="closeImage()">
-        <img id="enlarged-image" src="" class="max-w-full max-h-full rounded shadow-2xl transition-transform duration-300 scale-95">
-        <div class="absolute top-4 right-4 text-white font-bold text-xl">✕ Sluiten</div>
+    <div id="image-overlay" class="fixed inset-0 bg-slate-900/90 z-[100] hidden flex items-center justify-center p-6 cursor-zoom-out" onclick="closeImage()">
+        <img id="enlarged-image" src="" class="max-w-full max-h-full rounded-lg shadow-2xl transition-all duration-300 scale-95">
+        <div class="absolute top-6 right-6 text-white bg-white/20 hover:bg-white/40 px-4 py-2 rounded-full font-bold transition">✕ Sluiten</div>
     </div>
 
-    <div id="login-overlay" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-4">
-        <div class="bg-white max-w-md w-full p-8 rounded-xl shadow-2xl text-center border-t-8 border-[#003366]">
-            <h2 class="text-2xl font-black text-[#003366] mb-6 uppercase italic">Inloggen Verbalisant</h2>
+    <div id="login-overlay" class="fixed inset-0 bg-slate-100 z-50 flex items-center justify-center p-4">
+        <div class="bg-white max-w-md w-full p-10 rounded-2xl shadow-xl text-center border-t-8 border-[#2c4c7c]">
+            <h2 class="text-2xl font-bold text-[#2c4c7c] mb-6 uppercase tracking-tight">Inloggen Verbalisant</h2>
             <div class="space-y-4 text-left">
-                <input type="text" id="login-naam" placeholder="Voornaam Achternaam" class="w-full p-3 border-2 rounded-lg outline-none focus:border-blue-900">
-                <select id="login-klas" class="w-full p-3 border-2 rounded-lg outline-none focus:border-blue-900">
+                <input type="text" id="login-naam" placeholder="Voornaam Achternaam" class="w-full p-4 border rounded-xl outline-none focus:ring-2 focus:ring-blue-200 transition">
+                <select id="login-klas" class="w-full p-4 border rounded-xl outline-none focus:ring-2 focus:ring-blue-200 transition">
                     <option value="">Selecteer je klas...</option>
                     <option>Delta</option><option>Echo</option><option>Foxtrot</option>
                     <option>Golf</option><option>Hotel</option><option>Juliett</option>
                     <option>Kilo</option><option>Lima</option><option>Mike</option>
                 </select>
-                <button onclick="doLogin()" class="w-full btn-police py-4 rounded-lg hover:bg-blue-800 transition">Start Simulatie</button>
+                <button onclick="doLogin()" class="w-full btn-police py-4 rounded-xl shadow-md transition-all active:scale-[0.98]">Start Simulatie</button>
             </div>
         </div>
     </div>
 
-    <div id="main-content" class="max-w-7xl mx-auto space-y-6 opacity-0 transition-opacity duration-700">
-        <header class="flex flex-col md:flex-row justify-between items-center border-b-4 border-[#003366] pb-4">
+    <div id="main-content" class="max-w-7xl mx-auto space-y-8 opacity-0 transition-opacity duration-1000">
+        <header class="flex flex-col md:flex-row justify-between items-end border-b-2 border-slate-200 pb-6">
             <div>
-                <h1 class="text-2xl font-black text-[#003366] uppercase italic tracking-tighter">OC Amsterdam | Incident 20260311-042</h1>
-                <p id="display-user" class="text-sm font-bold text-slate-500"></p>
+                <h1 class="text-3xl font-extrabold text-[#2c4c7c] uppercase tracking-tighter">OC Amsterdam <span class="text-slate-300 font-light">|</span> <span class="text-lg">Incident 20260311-042</span></h1>
+                <p id="display-user" class="text-sm font-semibold text-slate-400 mt-1 uppercase tracking-wider"></p>
             </div>
             <div class="text-right">
-                <p id="clock" class="text-xl font-mono font-bold text-blue-900"></p>
-                <p class="text-[10px] font-black text-red-600 animate-pulse uppercase tracking-widest">● Live verbinding</p>
+                <p id="clock" class="text-2xl font-mono font-medium text-slate-600"></p>
+                <p class="text-[10px] font-bold text-red-500 animate-pulse uppercase tracking-[0.2em]">● Live verbinding</p>
             </div>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <div class="lg:col-span-4 space-y-6">
-                
+            <div class="lg:col-span-4 space-y-8">
                 <div class="p-card p-6" id="audio-card">
-                    <h3 class="font-black text-blue-900 uppercase mb-4 text-xs text-center tracking-widest">Meldkamer Portofoon</h3>
-                    <div class="bg-slate-800 p-4 rounded-lg shadow-inner">
-                        <div class="flex justify-center gap-2 mb-4">
-                            <button onclick="startSpeaking()" class="bg-green-600 text-white px-4 py-2 rounded text-xs font-bold hover:bg-green-500 transition">▶ Play</button>
-                            <button onclick="pauseSpeaking()" class="bg-yellow-500 text-white px-4 py-2 rounded text-xs font-bold hover:bg-yellow-400 transition">⏸ Pauze</button>
-                            <button onclick="stopSpeaking()" class="bg-red-600 text-white px-4 py-2 rounded text-xs font-bold hover:bg-red-500 transition">🔄 Reset</button>
+                    <h3 class="font-bold text-slate-400 uppercase mb-4 text-[10px] text-center tracking-[0.3em]">Meldkamer Portofoon</h3>
+                    <div class="bg-slate-50 border border-slate-200 p-5 rounded-xl shadow-inner">
+                        <div class="flex justify-center gap-3 mb-5">
+                            <button onclick="startSpeaking()" class="bg-slate-700 text-white px-5 py-2 rounded-lg text-xs font-bold hover:bg-slate-600 transition">▶ Play</button>
+                            <button onclick="pauseSpeaking()" class="bg-slate-200 text-slate-600 px-5 py-2 rounded-lg text-xs font-bold hover:bg-slate-300 transition">⏸ Pauze</button>
+                            <button onclick="stopSpeaking()" class="bg-slate-100 text-slate-400 px-5 py-2 rounded-lg text-xs font-bold hover:bg-slate-200 transition">🔄 Reset</button>
                         </div>
-                        <div class="h-1 w-full bg-slate-700 rounded overflow-hidden">
-                            <div id="audio-progress" class="h-full bg-blue-400 w-0 transition-all"></div>
+                        <div class="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden">
+                            <div id="audio-progress" class="h-full bg-blue-500 w-0 transition-all duration-300"></div>
                         </div>
                     </div>
-                    <div id="transcript" class="hidden mt-4 text-[11px] leading-relaxed text-slate-700 bg-yellow-50 p-4 rounded border-2 border-yellow-100 italic">
-                        <strong>TRANSCRIPT OC:</strong><br>
+                    <div id="transcript" class="hidden mt-6 text-[12px] leading-relaxed text-slate-600 bg-blue-50/50 p-5 rounded-xl border border-blue-100 italic shadow-sm">
+                        <strong class="text-blue-900 not-italic block mb-1">TRANSCRIPT OC:</strong>
                         "OC voor de 10.30... Prio 1. Inbraakalarm bij Scholengemeenschap De Dapper aan de Dapperstraat. Een beveiliger kijkt op afstand live mee via de IP-camera’s en meldt een heterdaadsituatie. Er bevinden zich op dit moment twee personen in de mediatheek op de begane grond. Zij zijn bezig met het vullen van tassen met iPads uit de laadkarren. De beveiliger meldt tevens dat er braakschade zichtbaar is aan een raam aan de achterzijde van het pand, nabij de conciërgeruimte. Verdachten zijn nog binnen. Signalement volgt via MDT. Hoe is uw positie? Over."
                     </div>
                 </div>
 
                 <div class="p-card p-6">
-                    <h3 class="font-black text-blue-900 uppercase mb-4 text-xs text-center tracking-widest">Media-Dossier</h3>
+                    <h3 class="font-bold text-slate-400 uppercase mb-4 text-[10px] text-center tracking-[0.3em]">Media-Dossier</h3>
                     <div class="space-y-4">
-                        <div class="relative border-2 border-black rounded overflow-hidden bg-black group">
-                            <span class="absolute top-1 left-1 text-[9px] text-green-400 font-mono z-10">CAM_02 MEDIATHEEK</span>
-                            <img src="./cctv-mediatheek-overzicht.jpg" class="w-full opacity-80 cursor-zoom-in hover:opacity-100 transition" alt="CCTV 1" onclick="openImage(this.src)">
+                        <div class="relative border border-slate-200 rounded-xl overflow-hidden shadow-sm group">
+                            <span class="absolute top-2 left-2 px-2 py-1 rounded text-[8px] cctv-label z-10">CAM_02 MEDIATHEEK</span>
+                            <img src="./cctv-mediatheek-overzicht.jpg" class="w-full opacity-90 cursor-zoom-in hover:scale-105 transition duration-500" alt="CCTV 1" onclick="openImage(this.src)">
                         </div>
-                        <div class="relative border-2 border-black rounded overflow-hidden bg-black group">
-                            <span class="absolute top-1 left-1 text-[9px] text-green-400 font-mono z-10">CAM_04 DETAIL_NN2</span>
-                            <img src="./cctv-verdachte-detail.jpg" class="w-full opacity-80 cursor-zoom-in hover:opacity-100 transition" alt="CCTV 2" onclick="openImage(this.src)">
+                        <div class="relative border border-slate-200 rounded-xl overflow-hidden shadow-sm group">
+                            <span class="absolute top-2 left-2 px-2 py-1 rounded text-[8px] cctv-label z-10">CAM_04 DETAIL_NN2</span>
+                            <img src="./cctv-verdachte-detail.jpg" class="w-full opacity-90 cursor-zoom-in hover:scale-105 transition duration-500" alt="CCTV 2" onclick="openImage(this.src)">
                         </div>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div class="text-center">
-                                <img src="./braaksporen-raam.jpg" class="h-16 w-full object-cover rounded border border-slate-300 cursor-zoom-in hover:border-blue-900 transition" onclick="openImage(this.src)">
-                                <span class="text-[8px] font-bold text-slate-400 uppercase">Braak</span>
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="text-center group">
+                                <div class="overflow-hidden rounded-lg border border-slate-200 mb-1">
+                                    <img src="./braaksporen-raam.jpg" class="h-16 w-full object-cover cursor-zoom-in group-hover:scale-110 transition" onclick="openImage(this.src)">
+                                </div>
+                                <span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Braak</span>
                             </div>
-                            <div class="text-center">
-                                <img src="./conciërgeruimte-doorzocht.jpg" class="h-16 w-full object-cover rounded border border-slate-300 cursor-zoom-in hover:border-blue-900 transition" onclick="openImage(this.src)">
-                                <span class="text-[8px] font-bold text-slate-400 uppercase">Conciërge</span>
+                            <div class="text-center group">
+                                <div class="overflow-hidden rounded-lg border border-slate-200 mb-1">
+                                    <img src="./conciërgeruimte-doorzocht.jpg" class="h-16 w-full object-cover cursor-zoom-in group-hover:scale-110 transition" onclick="openImage(this.src)">
+                                </div>
+                                <span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Conciërge</span>
                             </div>
-                            <div class="text-center">
-                                <img src="./leerplein-puinhoop.jpg" class="h-16 w-full object-cover rounded border border-slate-300 cursor-zoom-in hover:border-blue-900 transition" onclick="openImage(this.src)">
-                                <span class="text-[8px] font-bold text-slate-400 uppercase">Leerplein</span>
+                            <div class="text-center group">
+                                <div class="overflow-hidden rounded-lg border border-slate-200 mb-1">
+                                    <img src="./leerplein-puinhoop.jpg" class="h-16 w-full object-cover cursor-zoom-in group-hover:scale-110 transition" onclick="openImage(this.src)">
+                                </div>
+                                <span class="text-[8px] font-bold text-slate-400 uppercase tracking-tighter">Leerplein</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="lg:col-span-8 space-y-6">
-                <div class="p-card p-6">
-                    <h3 class="font-black text-blue-900 uppercase mb-4 text-sm italic tracking-widest">Proces-Verbaal Bevindingen</h3>
-                    <textarea id="pv-body" class="w-full h-80 p-6 font-serif text-lg border-2 border-slate-100 rounded-lg outline-none focus:ring-4 focus:ring-blue-50 leading-relaxed shadow-inner mb-4" 
+            <div class="lg:col-span-8 space-y-8">
+                <div class="p-card p-8">
+                    <h3 class="font-bold text-[#2c4c7c] uppercase mb-5 text-sm tracking-widest border-l-4 border-[#e6b800] pl-3">Proces-Verbaal Bevindingen</h3>
+                    <textarea id="pv-body" class="w-full h-80 p-8 font-serif text-lg border border-slate-200 rounded-xl outline-none focus:ring-4 focus:ring-blue-50/50 leading-relaxed shadow-inner mb-6 bg-slate-50/30" 
                         placeholder="Ik, [Voornaam Achternaam], verbalisant van klas [Klas], verklaar als volgt..."></textarea>
-                    <button onclick="submitDossier()" class="w-full btn-police py-4 rounded-lg shadow-xl hover:bg-blue-800 transition-all">Dossier Publiceren in Natoruimte</button>
+                    <button onclick="submitDossier()" class="w-full btn-police py-5 rounded-xl shadow-lg shadow-blue-900/10 hover:-translate-y-0.5 transition-all">Dossier Publiceren in Natoruimte</button>
                 </div>
 
-                <div class="bg-slate-900 p-8 rounded-xl shadow-2xl border-t-8 border-yellow-500">
-                    <h2 class="text-xl font-black text-yellow-500 uppercase mb-6 italic tracking-widest border-b border-slate-700 pb-2">Livefeed Natoruimte (Feedbackruimte)</h2>
-                    <div id="sub-list" class="space-y-8">
+                <div class="bg-white p-8 rounded-2xl shadow-xl border-t-8 border-[#e6b800]">
+                    <h2 class="text-xl font-bold text-slate-700 uppercase mb-6 tracking-tight border-b border-slate-100 pb-4">Livefeed Natoruimte <span class="text-slate-300 font-light text-sm italic">(Feedbackruimte)</span></h2>
+                    <div id="sub-list" class="space-y-6">
                         </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="feedback-modal" class="fixed inset-0 bg-slate-900/90 z-[60] hidden flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-2xl p-8 rounded-xl border-t-8 border-yellow-500 shadow-2xl">
-            <h3 id="feedback-target-name" class="text-xl font-black text-blue-900 mb-2 uppercase italic">Feedback op PV</h3>
-            <p class="text-xs text-slate-500 mb-6 font-bold uppercase tracking-widest">Check op: ASTMA, Decor-regels (TT/VT), Fouillering, Cautie en Ambtseed.</p>
+    <div id="feedback-modal" class="fixed inset-0 bg-slate-900/80 z-[60] hidden flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-2xl p-10 rounded-2xl border-t-8 border-[#e6b800] shadow-2xl">
+            <h3 id="feedback-target-name" class="text-xl font-bold text-[#2c4c7c] mb-2 uppercase">Feedback op PV</h3>
+            <p class="text-[10px] text-slate-400 mb-8 font-bold uppercase tracking-[0.1em]">Check op: ASTMA, Decor-regels (TT/VT), Fouillering, Cautie en Ambtseed.</p>
             
-            <textarea id="feedback-text" class="w-full h-64 p-6 bg-yellow-50 border-2 border-yellow-100 rounded-lg italic outline-none mb-4" 
-                placeholder="Geef hier je feedback. Let op:
-- Is het decor filmisch? (Element = Onderwerp)
-- Is de cautie op het juiste moment gegeven?
-- Klopt het ASTMA-model in de omschrijving?
-- Is de fouillering onderbouwd op gevaar/veiligheid?"></textarea>
+            <textarea id="feedback-text" class="w-full h-64 p-6 bg-slate-50 border border-slate-200 rounded-xl italic outline-none mb-6 text-slate-600 shadow-inner" 
+                placeholder="Geef hier je feedback..."></textarea>
             
             <div class="flex gap-4">
-                <button onclick="submitFeedback()" class="flex-1 btn-police py-4 rounded font-black">Feedback Indienen</button>
-                <button onclick="closeFeedback()" class="px-8 bg-slate-200 text-slate-600 font-bold rounded uppercase">Sluiten</button>
+                <button onclick="submitFeedback()" class="flex-1 btn-police py-4 rounded-xl shadow-md">Feedback Indienen</button>
+                <button onclick="closeFeedback()" class="px-8 bg-slate-100 text-slate-500 font-bold rounded-xl uppercase hover:bg-slate-200 transition">Sluiten</button>
             </div>
         </div>
     </div>
@@ -251,13 +257,13 @@
                         });
                     }
                     list.innerHTML += `
-                        <div class="bg-white p-6 rounded-lg border-l-8 border-blue-900 shadow-md">
-                            <div class="flex justify-between items-start mb-4 border-b pb-2">
-                                <div><span class="font-black text-blue-900 uppercase italic">${s.name}</span> <span class="text-xs text-slate-400 ml-2">${s.time}</span></div>
-                                <button onclick="openFeedback('${id}', '${s.name}')" class="bg-yellow-500 text-white px-3 py-1 rounded text-[10px] font-black hover:bg-yellow-400">➕ FEEDBACK GEVEN</button>
+                        <div class="bg-slate-50/50 p-6 rounded-xl border border-slate-100 shadow-sm">
+                            <div class="flex justify-between items-start mb-4 border-b border-slate-100 pb-3">
+                                <div><span class="font-bold text-[#2c4c7c] uppercase">${s.name}</span> <span class="text-[10px] text-slate-400 ml-2 tracking-widest">${s.time}</span></div>
+                                <button onclick="openFeedback('${id}', '${s.name}')" class="bg-blue-100 text-[#2c4c7c] px-4 py-1.5 rounded-lg text-[10px] font-bold hover:bg-blue-200 transition uppercase tracking-wider">➕ Feedback geven</button>
                             </div>
-                            <p class="text-sm font-serif leading-relaxed text-slate-800 whitespace-pre-wrap mb-4">${s.pv}</p>
-                            <div class="space-y-2">${fHtml}</div>
+                            <p class="text-sm font-serif leading-relaxed text-slate-700 whitespace-pre-wrap mb-4 bg-white p-4 rounded-lg border border-slate-50">${s.pv}</p>
+                            <div class="space-y-3">${fHtml}</div>
                         </div>`;
                 });
             }
