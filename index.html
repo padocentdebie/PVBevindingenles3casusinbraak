@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Politieacademie | Examen-Casus Q2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --nederland-blauw: #16305e; --politie-blauw: #003366; }
+        body { background-color: #f3f4f6; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .emergency-header { background: linear-gradient(90deg, #cc0000 0%, #003366 100%); }
+        .terminal { background: #1a1a1a; color: #00ff00; font-family: 'Courier New', Courier, monospace; padding: 20px; border-radius: 8px; }
+        .cctv-img { filter: sepia(20%) contrast(120%) brightness(80%); border: 2px solid #333; }
+    </style>
+</head>
+<body class="p-6">
+
+    <div class="max-w-6xl mx-auto space-y-8">
+        <header class="emergency-header text-white p-6 rounded-xl shadow-lg flex justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-black uppercase italic tracking-tighter">Operationeel Centrum - Regio Amsterdam</h1>
+                <p class="text-sm font-bold opacity-80">Incident: Inbraak op heterdaad (Prio 1) | Locatie: Scholengemeenschap De Dapper</p>
+            </div>
+            <div class="text-right">
+                <p id="current-time-display" class="text-2xl font-mono font-bold"></p>
+                <p class="text-xs uppercase">Woensdag 11 maart 2026</p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            
+            <div class="space-y-6">
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-900">
+                    <h2 class="font-black text-blue-900 uppercase mb-4">Melding OC (Audio)</h2>
+                    <div class="bg-slate-100 p-4 rounded-lg border flex flex-col gap-3">
+                        <div class="flex items-center gap-3">
+                            <button onclick="playAudio()" class="bg-blue-900 text-white p-2 rounded-full hover:bg-blue-700">▶️</button>
+                            <span class="text-xs font-mono font-bold">OC_MELDING_2245.mp3</span>
+                        </div>
+                        <div id="audio-script" class="hidden text-xs italic text-slate-600 bg-white p-2 rounded border">
+                            "Krak-pzzzt... OC voor de 10.30... Prio 1, inbraak alarm bij scholengemeenschap De Dapper aan de Dapperstraat. Beveiliger ziet op afstand twee personen in de mediatheek. Ze zijn iPads in tassen aan het laden. Signalement volgt via MDT. Hoe is uw positie? Over... pzzzt."
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-900">
+                    <h2 class="font-black text-blue-900 uppercase mb-4">CCTV Feed 02 (Mediatheek)</h2>
+                    <div class="space-y-4">
+                        <div class="relative">
+                            <div class="absolute top-2 left-2 bg-red-600 text-white text-[10px] px-2 py-0.5 rounded animate-pulse">● REC</div>
+                            <img src="https://images.unsplash.com/photo-1562613531-72290f6707f1?auto=format&fit=crop&q=80&w=400" alt="CCTV 1" class="cctv-img rounded w-full">
+                            <p class="text-[10px] text-slate-500 mt-1">Cam 02: Verdachte 1 (NN1) - Zwarte hoodie, spijkerbroek, witte sneakers.</p>
+                        </div>
+                        <div class="relative">
+                            <img src="https://images.unsplash.com/photo-1541829070764-84a7d30dee3f?auto=format&fit=crop&q=80&w=400" alt="CCTV 2" class="cctv-img rounded w-full">
+                            <p class="text-[10px] text-slate-500 mt-1">Cam 04: Verdachte 2 (NN2) - Blauw jack, rugtas, grijze muts.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:col-span-2 space-y-6">
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-yellow-500">
+                    <h2 class="font-black text-yellow-600 uppercase mb-2">Live Doel-Aanpak-Analyse (DAA)</h2>
+                    <p class="text-xs mb-4 text-slate-500 italic">Formuleer kort uw plan van aanpak voordat u de school betreedt.</p>
+                    <textarea id="daa-input" oninput="saveDAA()" class="w-full h-24 p-3 border-2 border-slate-200 rounded-lg focus:border-yellow-500 outline-none transition-all" placeholder="Doel: ... Aanpak: ... Analyse: ..."></textarea>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-900">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="font-black text-blue-900 uppercase">Proces-Verbaal van Aanhouding</h2>
+                        <span class="text-xs bg-slate-100 px-2 py-1 rounded font-bold">Status: Concept</span>
+                    </div>
+                    
+                    <div class="space-y-4 text-sm">
+                        <div class="grid grid-cols-2 gap-4">
+                            <input type="text" id="student-naam" placeholder="Naam Student" class="p-2 border rounded">
+                            <input type="text" id="student-klas" placeholder="Klas" class="p-2 border rounded">
+                        </div>
+
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100 mb-4">
+                            <p class="text-[10px] uppercase font-bold text-blue-800">Opdracht Instructies:</p>
+                            <ul class="list-disc list-inside text-[11px] text-blue-900 space-y-1 mt-2">
+                                <li><strong>Decor:</strong> Beschrijf de mediatheek (Kaal = Tegenwoordige tijd | Veranderlijk = Verleden tijd). Elementen zijn onderwerp van de zin.</li>
+                                <li><strong>ASTMA:</strong> Pas het model toe tijdens de aanhouding.</li>
+                                <li><strong>Rechtmatigheid:</strong> Onderbouw heterdaad en het gebruik van transportboeien.</li>
+                                <li><strong>Ambtshandelingen:</strong> Noteer dag, datum en tijd bij elke stap.</li>
+                                <li><strong>Functionaris:</strong> Let op de spelling van de hulpOfficier van Justitie.</li>
+                            </ul>
+                        </div>
+
+                        <textarea id="pv-tekst" class="w-full h-96 p-4 border-2 border-slate-200 rounded-lg font-serif text-base leading-relaxed focus:ring-2 focus:ring-blue-900 outline-none" placeholder="Op [dag] [datum] te [tijd] bevonden wij ons..."></textarea>
+                        
+                        <div class="flex gap-4">
+                            <button onclick="submitPV()" class="flex-1 bg-blue-900 text-white py-4 rounded-lg font-black uppercase tracking-widest hover:bg-blue-800 transition-all">Dossier Indienen</button>
+                            <button onclick="resetForm()" class="px-6 bg-slate-200 text-slate-700 py-4 rounded-lg font-bold uppercase hover:bg-slate-300">Reset</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="teacher-panel" class="bg-slate-900 text-white p-8 rounded-xl shadow-2xl mt-12">
+            <h2 class="text-2xl font-black uppercase italic mb-6 text-yellow-500">Docent Overzicht: Ingezonden Teksten</h2>
+            <div id="submissions-list" class="space-y-6">
+                </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA3_rzoZOWytlyAbYKKe_WuFlD8z2WvbX4",
+            authDomain: "aangifteq2les1.firebaseapp.com",
+            databaseURL: "https://aangifteq2les1-default-rtdb.europe-west1.firebasedatabase.app",
+            projectId: "aangifteq2les1",
+            storageBucket: "aangifteq2les1.firebasestorage.app",
+            messagingSenderId: "1071661084879",
+            appId: "1:1071661084879:web:ec81dfed806ad75a8847ba"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Functies voor studenten
+        window.saveDAA = () => {
+            const daa = document.getElementById('daa-input').value;
+            const name = document.getElementById('student-naam').value || 'Anoniem';
+            if(name !== 'Anoniem') {
+                set(ref(db, `live_daa/${name}`), { text: daa, timestamp: Date.now() });
+            }
+        };
+
+        window.submitPV = () => {
+            const name = document.getElementById('student-naam').value;
+            const klas = document.getElementById('student-klas').value;
+            const pv = document.getElementById('pv-tekst').value;
+
+            if(!name || !pv) return alert("Vul a.u.b. je naam en het PV in.");
+
+            const submissionRef = ref(db, 'submissions');
+            const newSubmission = push(submissionRef);
+            set(newSubmission, {
+                name, klas, pv, timestamp: new Date().toLocaleString()
+            }).then(() => {
+                alert("Proces-Verbaal succesvol verzonden naar de docent.");
+            });
+        };
+
+        window.resetForm = () => {
+            if(confirm("Weet je zeker dat je alles wilt wissen?")) {
+                document.getElementById('pv-tekst').value = "";
+                document.getElementById('daa-input').value = "";
+            }
+        };
+
+        // Docent paneel logica
+        onValue(ref(db, 'submissions'), (snapshot) => {
+            const list = document.getElementById('submissions-list');
+            list.innerHTML = "";
+            const data = snapshot.val();
+            if(data) {
+                Object.entries(data).reverse().forEach(([id, sub]) => {
+                    const div = document.createElement('div');
+                    div.className = "bg-slate-800 p-6 rounded-lg border border-slate-700 space-y-4";
+                    div.innerHTML = `
+                        <div class="flex justify-between border-b border-slate-700 pb-2">
+                            <span class="font-black text-yellow-500">${sub.name} (${sub.klas})</span>
+                            <span class="text-xs text-slate-400">${sub.timestamp}</span>
+                        </div>
+                        <p class="text-sm whitespace-pre-wrap font-serif text-slate-200">${sub.pv}</p>
+                        <div class="bg-blue-900/30 p-4 rounded text-xs italic">
+                            <strong>Feedback Generator:</strong> Controleer op: ASTMA aanwezig? Decor correct (onderwerp/tijd)? Cautie vermeld? Spelling hulpOfficier?
+                        </div>
+                    `;
+                    list.appendChild(div);
+                });
+            }
+        });
+
+        // UI Helpers
+        window.playAudio = () => {
+            document.getElementById('audio-script').classList.toggle('hidden');
+        };
+
+        setInterval(() => {
+            document.getElementById('current-time-display').innerText = new Date().toLocaleTimeString('nl-NL');
+        }, 1000);
+    </script>
+</body>
+</html>
