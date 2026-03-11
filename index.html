@@ -13,9 +13,17 @@
         .speaking-border { animation: pulse 1.5s infinite; border: 4px solid #ef4444 !important; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
         .feedback-item { background: #fffdf0; border-left: 4px solid var(--p-gold); padding: 10px; margin-top: 8px; font-size: 0.8rem; }
+        /* Extra styles voor zoom */
+        .cursor-zoom-in { cursor: zoom-in; }
+        .cursor-zoom-out { cursor: zoom-out; }
     </style>
 </head>
 <body class="p-4 md:p-8">
+
+    <div id="image-overlay" class="fixed inset-0 bg-black/95 z-[100] hidden flex items-center justify-center p-4 cursor-zoom-out" onclick="closeImage()">
+        <img id="enlarged-image" src="" class="max-w-full max-h-full rounded shadow-2xl transition-transform duration-300 scale-95">
+        <div class="absolute top-4 right-4 text-white font-bold text-xl">✕ Sluiten</div>
+    </div>
 
     <div id="login-overlay" class="fixed inset-0 bg-slate-900 z-50 flex items-center justify-center p-4">
         <div class="bg-white max-w-md w-full p-8 rounded-xl shadow-2xl text-center border-t-8 border-[#003366]">
@@ -70,25 +78,25 @@
                 <div class="p-card p-6">
                     <h3 class="font-black text-blue-900 uppercase mb-4 text-xs text-center tracking-widest">Media-Dossier</h3>
                     <div class="space-y-4">
-                        <div class="relative border-2 border-black rounded overflow-hidden bg-black">
-                            <span class="absolute top-1 left-1 text-[9px] text-green-400 font-mono">CAM_02 MEDIATHEEK</span>
-                            <img src="./cctv-mediatheek-overzicht.jpg" class="w-full opacity-80" alt="CCTV 1">
+                        <div class="relative border-2 border-black rounded overflow-hidden bg-black group">
+                            <span class="absolute top-1 left-1 text-[9px] text-green-400 font-mono z-10">CAM_02 MEDIATHEEK</span>
+                            <img src="./cctv-mediatheek-overzicht.jpg" class="w-full opacity-80 cursor-zoom-in hover:opacity-100 transition" alt="CCTV 1" onclick="openImage(this.src)">
                         </div>
-                        <div class="relative border-2 border-black rounded overflow-hidden bg-black">
-                            <span class="absolute top-1 left-1 text-[9px] text-green-400 font-mono">CAM_04 DETAIL_NN2</span>
-                            <img src="./cctv-verdachte-detail.jpg" class="w-full opacity-80" alt="CCTV 2">
+                        <div class="relative border-2 border-black rounded overflow-hidden bg-black group">
+                            <span class="absolute top-1 left-1 text-[9px] text-green-400 font-mono z-10">CAM_04 DETAIL_NN2</span>
+                            <img src="./cctv-verdachte-detail.jpg" class="w-full opacity-80 cursor-zoom-in hover:opacity-100 transition" alt="CCTV 2" onclick="openImage(this.src)">
                         </div>
                         <div class="grid grid-cols-3 gap-2">
                             <div class="text-center">
-                                <img src="./braaksporen-raam.jpg" class="h-16 w-full object-cover rounded border border-slate-300">
+                                <img src="./braaksporen-raam.jpg" class="h-16 w-full object-cover rounded border border-slate-300 cursor-zoom-in hover:border-blue-900 transition" onclick="openImage(this.src)">
                                 <span class="text-[8px] font-bold text-slate-400 uppercase">Braak</span>
                             </div>
                             <div class="text-center">
-                                <img src="./conciërgeruimte-doorzocht.jpg" class="h-16 w-full object-cover rounded border border-slate-300">
+                                <img src="./conciërgeruimte-doorzocht.jpg" class="h-16 w-full object-cover rounded border border-slate-300 cursor-zoom-in hover:border-blue-900 transition" onclick="openImage(this.src)">
                                 <span class="text-[8px] font-bold text-slate-400 uppercase">Conciërge</span>
                             </div>
                             <div class="text-center">
-                                <img src="./leerplein-puinhoop.jpg" class="h-16 w-full object-cover rounded border border-slate-300">
+                                <img src="./leerplein-puinhoop.jpg" class="h-16 w-full object-cover rounded border border-slate-300 cursor-zoom-in hover:border-blue-900 transition" onclick="openImage(this.src)">
                                 <span class="text-[8px] font-bold text-slate-400 uppercase">Leerplein</span>
                             </div>
                         </div>
@@ -147,6 +155,22 @@
         const db = getDatabase(app);
         let studentData = { name: "", class: "" };
         let activeFeedbackId = null;
+
+        // ZOOM FUNCTIES
+        window.openImage = (src) => {
+            const overlay = document.getElementById('image-overlay');
+            const img = document.getElementById('enlarged-image');
+            img.src = src;
+            overlay.classList.remove('hidden');
+            setTimeout(() => img.classList.remove('scale-95'), 10);
+        };
+
+        window.closeImage = () => {
+            const overlay = document.getElementById('image-overlay');
+            const img = document.getElementById('enlarged-image');
+            img.classList.add('scale-95');
+            overlay.classList.add('hidden');
+        };
 
         // BROWSER SPRAAK (OC MELDING)
         const msg = new SpeechSynthesisUtterance();
