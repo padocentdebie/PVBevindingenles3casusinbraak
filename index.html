@@ -37,7 +37,7 @@
                 <input type="text" id="login-naam" placeholder="Voornaam Achternaam" class="w-full p-4 border rounded-xl outline-none focus:ring-2 focus:ring-blue-200 transition">
                 <select id="login-klas" class="w-full p-4 border rounded-xl outline-none focus:ring-2 focus:ring-blue-200 transition">
                     <option value="">Selecteer je klas...</option>
-                    <option>Delta</option><option>Echo</option><option>Foxtrot</option>
+                    <option>Alpha</option><option>Bravo</option><option>Echo</option><option>Delta</option><option>Echo</option><option>Foxtrot</option>
                     <option>Golf</option><option>Hotel</option><option>Juliett</option>
                     <option>Kilo</option><option>Lima</option><option>Mike</option>
                 </select>
@@ -59,7 +59,6 @@
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
             <div class="lg:col-span-4 space-y-8">
                 <div class="p-card p-6" id="audio-card">
                     <h3 class="font-bold text-slate-400 uppercase mb-4 text-[10px] text-center tracking-[0.3em]">Meldkamer Portofoon</h3>
@@ -119,13 +118,16 @@
                     <h3 class="font-bold text-[#2c4c7c] uppercase mb-5 text-sm tracking-widest border-l-4 border-[#e6b800] pl-3">Proces-Verbaal Bevindingen</h3>
                     <textarea id="pv-body" class="w-full h-80 p-8 font-serif text-lg border border-slate-200 rounded-xl outline-none focus:ring-4 focus:ring-blue-50/50 leading-relaxed shadow-inner mb-6 bg-slate-50/30" 
                         placeholder="Ik, [Voornaam Achternaam], verbalisant van klas [Klas], verklaar als volgt..."></textarea>
-                    <button onclick="submitDossier()" class="w-full btn-police py-5 rounded-xl shadow-lg shadow-blue-900/10 hover:-translate-y-0.5 transition-all">Dossier Publiceren in Natoruimte</button>
+                    
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <button onclick="submitDossier()" class="flex-1 btn-police py-5 rounded-xl shadow-lg shadow-blue-900/10 hover:-translate-y-0.5 transition-all">Dossier Publiceren in Natoruimte</button>
+                        <button onclick="resetPV()" class="md:w-1/4 bg-slate-100 text-slate-400 font-bold py-5 rounded-xl hover:bg-red-50 hover:text-red-600 transition-all uppercase text-xs tracking-widest border border-slate-200">Tekst Wissen</button>
+                    </div>
                 </div>
 
                 <div class="bg-white p-8 rounded-2xl shadow-xl border-t-8 border-[#e6b800]">
                     <h2 class="text-xl font-bold text-slate-700 uppercase mb-6 tracking-tight border-b border-slate-100 pb-4">Livefeed Natoruimte <span class="text-slate-300 font-light text-sm italic">(Feedbackruimte)</span></h2>
-                    <div id="sub-list" class="space-y-6">
-                        </div>
+                    <div id="sub-list" class="space-y-6"></div>
                 </div>
             </div>
         </div>
@@ -135,10 +137,8 @@
         <div class="bg-white w-full max-w-2xl p-10 rounded-2xl border-t-8 border-[#e6b800] shadow-2xl">
             <h3 id="feedback-target-name" class="text-xl font-bold text-[#2c4c7c] mb-2 uppercase">Feedback op PV</h3>
             <p class="text-[10px] text-slate-400 mb-8 font-bold uppercase tracking-[0.1em]">Check op: ASTMA, Decor-regels (TT/VT), Fouillering, Cautie en Ambtseed.</p>
-            
             <textarea id="feedback-text" class="w-full h-64 p-6 bg-slate-50 border border-slate-200 rounded-xl italic outline-none mb-6 text-slate-600 shadow-inner" 
                 placeholder="Geef hier je feedback..."></textarea>
-            
             <div class="flex gap-4">
                 <button onclick="submitFeedback()" class="flex-1 btn-police py-4 rounded-xl shadow-md">Feedback Indienen</button>
                 <button onclick="closeFeedback()" class="px-8 bg-slate-100 text-slate-500 font-bold rounded-xl uppercase hover:bg-slate-200 transition">Sluiten</button>
@@ -162,7 +162,6 @@
         let studentData = { name: "", class: "" };
         let activeFeedbackId = null;
 
-        // ZOOM FUNCTIES
         window.openImage = (src) => {
             const overlay = document.getElementById('image-overlay');
             const img = document.getElementById('enlarged-image');
@@ -178,7 +177,6 @@
             overlay.classList.add('hidden');
         };
 
-        // BROWSER SPRAAK (OC MELDING)
         const msg = new SpeechSynthesisUtterance();
         msg.lang = 'nl-NL';
         msg.rate = 0.9;
@@ -200,7 +198,6 @@
             document.getElementById('transcript').classList.add('hidden');
         };
 
-        // LOGIN & SYSTEM
         window.doLogin = () => {
             const n = document.getElementById('login-naam').value;
             const k = document.getElementById('login-klas').value;
@@ -219,7 +216,12 @@
             alert("Je PV is gepubliceerd in de natoruimte.");
         };
 
-        // FEEDBACK ACTIES
+        window.resetPV = () => {
+            if(confirm("Weet je zeker dat je de tekst van je PV wilt wissen?")) {
+                document.getElementById('pv-body').value = "";
+            }
+        };
+
         window.openFeedback = (id, name) => {
             activeFeedbackId = id;
             document.getElementById('feedback-target-name').innerText = `Feedback op PV van ${name}`;
@@ -242,7 +244,6 @@
             closeFeedback();
         };
 
-        // LIVE FEED RENDERING
         onValue(ref(db, 'submissions'), (snap) => {
             const list = document.getElementById('sub-list');
             list.innerHTML = "";
