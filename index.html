@@ -7,8 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root { 
-            --p-blue: #2c4c7c; /* Zachtere blauw-tint */
-            --p-gold: #e6b800; /* Minder fel goud */
+            --p-blue: #2c4c7c; 
+            --p-gold: #e6b800; 
             --bg-light: #f4f7f9; 
         }
         body { background-color: var(--bg-light); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; color: #334155; }
@@ -36,20 +36,19 @@
             <div class="space-y-4 text-left">
                 <input type="text" id="login-naam" placeholder="Voornaam Achternaam" class="w-full p-4 border rounded-xl outline-none focus:ring-2 focus:ring-blue-200 transition">
                 <select id="login-klas" class="w-full p-4 border rounded-xl outline-none focus:ring-2 focus:ring-blue-200 transition">
-    <option value="">Selecteer je klas...</option>
-    <option>Alpha</option>
-    <option>Bravo</option>
-    <option>Charlie</option>
-    <option>Delta</option>
-    <option>Echo</option>
-    <option>Foxtrot</option>
-    <option>Golf</option>
-    <option>Hotel</option>
-    <option>Juliett</option>
-    <option>Kilo</option>
-    <option>Lima</option>
-    <option>Mike</option>
-</select>
+                    <option value="">Selecteer je klas...</option>
+                    <option>Alpha</option>
+                    <option>Bravo</option>
+                    <option>Charlie</option>
+                    <option>Delta</option>
+                    <option>Echo</option>
+                    <option>Foxtrot</option>
+                    <option>Golf</option>
+                    <option>Hotel</option>
+                    <option>Juliett</option>
+                    <option>Kilo</option>
+                    <option>Lima</option>
+                    <option>Mike</option>
                 </select>
                 <button onclick="doLogin()" class="w-full btn-police py-4 rounded-xl shadow-md transition-all active:scale-[0.98]">Start Simulatie</button>
             </div>
@@ -158,7 +157,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+        import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.app";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA3_rzoZOWytlyAbYKKe_WuFlD8z2WvbX4",
@@ -172,6 +171,7 @@
         let studentData = { name: "", class: "" };
         let activeFeedbackId = null;
 
+        // Image Handling
         window.openImage = (src) => {
             const overlay = document.getElementById('image-overlay');
             const img = document.getElementById('enlarged-image');
@@ -179,7 +179,6 @@
             overlay.classList.remove('hidden');
             setTimeout(() => img.classList.remove('scale-95'), 10);
         };
-
         window.closeImage = () => {
             const overlay = document.getElementById('image-overlay');
             const img = document.getElementById('enlarged-image');
@@ -187,6 +186,7 @@
             overlay.classList.add('hidden');
         };
 
+        // Audio/Speech
         const msg = new SpeechSynthesisUtterance();
         msg.lang = 'nl-NL';
         msg.rate = 0.9;
@@ -208,6 +208,7 @@
             document.getElementById('transcript').classList.add('hidden');
         };
 
+        // App Logic
         window.doLogin = () => {
             const n = document.getElementById('login-naam').value;
             const k = document.getElementById('login-klas').value;
@@ -254,6 +255,7 @@
             closeFeedback();
         };
 
+        // Realtime Data Sync
         onValue(ref(db, 'submissions'), (snap) => {
             const list = document.getElementById('sub-list');
             list.innerHTML = "";
