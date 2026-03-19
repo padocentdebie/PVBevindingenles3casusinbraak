@@ -37,18 +37,10 @@
                 <input type="text" id="login-naam" placeholder="Voornaam Achternaam" class="w-full p-4 border rounded-xl outline-none focus:ring-2 focus:ring-blue-200 transition">
                 <select id="login-klas" class="w-full p-4 border rounded-xl outline-none focus:ring-2 focus:ring-blue-200 transition">
                     <option value="">Selecteer je klas...</option>
-                    <option>Alpha</option>
-                    <option>Bravo</option>
-                    <option>Charlie</option>
-                    <option>Delta</option>
-                    <option>Echo</option>
-                    <option>Foxtrot</option>
-                    <option>Golf</option>
-                    <option>Hotel</option>
-                    <option>Juliett</option>
-                    <option>Kilo</option>
-                    <option>Lima</option>
-                    <option>Mike</option>
+                    <option>Alpha</option><option>Bravo</option><option>Charlie</option>
+                    <option>Delta</option><option>Echo</option><option>Foxtrot</option>
+                    <option>Golf</option><option>Hotel</option><option>Juliett</option>
+                    <option>Kilo</option><option>Lima</option><option>Mike</option>
                 </select>
                 <button onclick="doLogin()" class="w-full btn-police py-4 rounded-xl shadow-md transition-all active:scale-[0.98]">Start Simulatie</button>
             </div>
@@ -135,7 +127,10 @@
                 </div>
 
                 <div class="bg-white p-8 rounded-2xl shadow-xl border-t-8 border-[#e6b800]">
-                    <h2 class="text-xl font-bold text-slate-700 uppercase mb-6 tracking-tight border-b border-slate-100 pb-4">Livefeed Natoruimte <span class="text-slate-300 font-light text-sm italic">(Feedbackruimte)</span></h2>
+                    <div class="flex justify-between items-center mb-6 border-b border-slate-100 pb-4">
+                        <h2 class="text-xl font-bold text-slate-700 uppercase tracking-tight">Livefeed Natoruimte <span class="text-slate-300 font-light text-sm italic">(Feedbackruimte)</span></h2>
+                        <button onclick="clearDatabase()" class="bg-red-600 text-white px-4 py-2 rounded-lg text-[10px] font-bold hover:bg-red-700 transition uppercase tracking-widest">⚠️ Database Legen</button>
+                    </div>
                     <div id="sub-list" class="space-y-6"></div>
                 </div>
             </div>
@@ -157,7 +152,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.app";
+        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA3_rzoZOWytlyAbYKKe_WuFlD8z2WvbX4",
@@ -171,22 +166,20 @@
         let studentData = { name: "", class: "" };
         let activeFeedbackId = null;
 
-        // Image Handling
+        window.clearDatabase = () => {
+            if(confirm("WEET JE HET ZEKER? Hiermee worden ALLE ingestuurde PV's van de hele klas definitief verwijderd uit de database.")) {
+                remove(ref(db, 'submissions')).then(() => alert("Database is succesvol geleegd."));
+            }
+        };
+
         window.openImage = (src) => {
             const overlay = document.getElementById('image-overlay');
             const img = document.getElementById('enlarged-image');
             img.src = src;
             overlay.classList.remove('hidden');
-            setTimeout(() => img.classList.remove('scale-95'), 10);
         };
-        window.closeImage = () => {
-            const overlay = document.getElementById('image-overlay');
-            const img = document.getElementById('enlarged-image');
-            img.classList.add('scale-95');
-            overlay.classList.add('hidden');
-        };
+        window.closeImage = () => document.getElementById('image-overlay').classList.add('hidden');
 
-        // Audio/Speech
         const msg = new SpeechSynthesisUtterance();
         msg.lang = 'nl-NL';
         msg.rate = 0.9;
@@ -208,7 +201,6 @@
             document.getElementById('transcript').classList.add('hidden');
         };
 
-        // App Logic
         window.doLogin = () => {
             const n = document.getElementById('login-naam').value;
             const k = document.getElementById('login-klas').value;
@@ -224,14 +216,10 @@
             if(pv.length < 20) return alert("Je PV is nog te kort.");
             push(ref(db, 'submissions'), { ...studentData, pv, time: new Date().toLocaleTimeString('nl-NL') });
             document.getElementById('pv-body').value = "";
-            alert("Je PV is gepubliceerd in de natoruimte.");
+            alert("Je PV is gepubliceerd.");
         };
 
-        window.resetPV = () => {
-            if(confirm("Weet je zeker dat je de tekst van je PV wilt wissen?")) {
-                document.getElementById('pv-body').value = "";
-            }
-        };
+        window.resetPV = () => { if(confirm("Tekst wissen?")) document.getElementById('pv-body').value = ""; };
 
         window.openFeedback = (id, name) => {
             activeFeedbackId = id;
@@ -239,10 +227,7 @@
             document.getElementById('feedback-modal').classList.remove('hidden');
         };
 
-        window.closeFeedback = () => {
-            document.getElementById('feedback-modal').classList.add('hidden');
-            document.getElementById('feedback-text').value = "";
-        };
+        window.closeFeedback = () => document.getElementById('feedback-modal').classList.add('hidden');
 
         window.submitFeedback = () => {
             const text = document.getElementById('feedback-text').value;
@@ -253,9 +238,9 @@
                 time: new Date().toLocaleTimeString('nl-NL')
             });
             closeFeedback();
+            document.getElementById('feedback-text').value = "";
         };
 
-        // Realtime Data Sync
         onValue(ref(db, 'submissions'), (snap) => {
             const list = document.getElementById('sub-list');
             list.innerHTML = "";
@@ -271,9 +256,9 @@
                     }
                     list.innerHTML += `
                         <div class="bg-slate-50/50 p-6 rounded-xl border border-slate-100 shadow-sm">
-                            <div class="flex justify-between items-start mb-4 border-b border-slate-100 pb-3">
-                                <div><span class="font-bold text-[#2c4c7c] uppercase">${s.name}</span> <span class="text-[10px] text-slate-400 ml-2 tracking-widest">${s.time}</span></div>
-                                <button onclick="openFeedback('${id}', '${s.name}')" class="bg-blue-100 text-[#2c4c7c] px-4 py-1.5 rounded-lg text-[10px] font-bold hover:bg-blue-200 transition uppercase tracking-wider">➕ Feedback geven</button>
+                            <div class="flex justify-between items-start mb-4">
+                                <div><span class="font-bold text-[#2c4c7c] uppercase">${s.name}</span> <span class="text-[10px] text-slate-400 ml-2">${s.time}</span></div>
+                                <button onclick="openFeedback('${id}', '${s.name}')" class="bg-blue-100 text-[#2c4c7c] px-4 py-1.5 rounded-lg text-[10px] font-bold">➕ Feedback</button>
                             </div>
                             <p class="text-sm font-serif leading-relaxed text-slate-700 whitespace-pre-wrap mb-4 bg-white p-4 rounded-lg border border-slate-50">${s.pv}</p>
                             <div class="space-y-3">${fHtml}</div>
